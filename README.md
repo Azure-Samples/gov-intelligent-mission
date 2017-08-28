@@ -7,8 +7,10 @@ author: smichelotti
 # Intelligent Mission
 
 The Intelligent Mission app is intended to demonstrate how organizations
-can use Cognitive Services in a Government-focused scenario. The target
-environment for this solution is [Azure Government](https://azure.microsoft.com/en-us/overview/clouds/government/).
+can use Cognitive Services in a Government-focused scenario. The Intelligent
+Mission app can be seen in [this Channel 9 video](https://channel9.msdn.com/blogs/Azure-Government/Cognitive-Services-on-Azure-Government-Intelligent-Mission) (though not a complete demo).
+
+The target environment for this solution is [Azure Government](https://azure.microsoft.com/en-us/overview/clouds/government/).
 
 The solution includes:
 
