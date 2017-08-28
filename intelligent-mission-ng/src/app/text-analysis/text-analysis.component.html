@@ -1,0 +1,106 @@
+<div>
+    <div [ngBusy]="busy"></div>
+
+    <div class="container">
+        <div class="card">
+            <h3 class="card-header">
+                Text Analysis - Latest News
+                <button class="btn btn-info float-right" [ngClass]="{'btn-info':titlesVisible, 'btn-info-outline':!titlesVisible}" (click)="titlesVisible = !titlesVisible" 
+                    placement="left" [ngbTooltip]="titlesVisible ? 'Hide' : 'Show'">
+                    <i class="fa" [ngClass]="{'fa-expand':!titlesVisible, 'fa-compress':titlesVisible}"></i>
+                </button>
+            </h3>
+            <div class="card-block" [ngbCollapse]="!titlesVisible">
+
+                <table class="table table-striped table-hover">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of newsItems">
+                            <td [innerHtml]="item.title"></td>
+                            <td>
+                                <button class="btn btn-primary" (click)="selectItem(item)">Select</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-striped table-hover">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Name (China)</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of newsItemsChina">
+                            <td [innerHtml]="item.title"></td>
+                            <td>
+                                <button class="btn btn-primary" (click)="selectItem(item)">Select</button> 
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <div class="card" *ngIf="selectedItem">
+            <h3 class="card-header">Analyze Text</h3>
+            <div class="card-block">
+                <button class="btn btn-primary mr-sm-2" (click)="analyze()">Analyze</button>
+                <button class="btn btn-warning mr-sm-2" (click)="translate()" *ngIf="selectedItem.translationRequired === 'true'">Translate</button>
+                <button class="btn btn-info" (click)="resultsCollapsed = !resultsCollapsed">View/Hide Results</button>
+                <div [ngbCollapse]="resultsCollapsed">
+
+                    <div class="card">
+                        <div class="card-header">Analysis Results</div>
+                        <div class="card-block">
+                            <button class="btn btn-info mr-sm-2" (click)="viewResults(content)" ngbTooltip="View Raw Results">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Keywords</th>
+                                        <th>Sentiment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of formattedResults">
+                                        <td>{{formatArray(item.keyPhrases.keyPhrases)}}</td>
+                                        <td>
+                                            <span class="badge" [ngClass]="{'badge-success': item.sentiment.score >= 0.8, 'badge-danger': item.sentiment.score <= 0.2}">
+                                                {{item.sentiment.score}}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-block">
+                <h4 class="card-title" [innerHtml]="selectedItem.title"></h4>
+                <div class="card-text" [innerHtml]="selectedItem.description"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <ng-template #content let-c="close" let-d="dismiss">
+        <div class="modal-header">Raw Text Analysis Results</div>
+        <div class="modal-body">
+            <pre>{{analysisResult | json}}</pre>
+        </div>
+    </ng-template>
+
+
+</div>

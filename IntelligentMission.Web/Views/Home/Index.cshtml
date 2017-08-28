@@ -1,0 +1,74 @@
+﻿@{
+    this.Layout = null;
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Intelligent Mission</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <environment names="Development">
+        <link rel="stylesheet" href="/node_modules/angular2-busy/build/style/busy.css">
+        <link rel="stylesheet" href="/css/bootstrap.darkly.min.css" media="screen">
+        <!--<link rel="stylesheet" href="node_modules/ng2-toastr/bundles/ng2-toastr.min.css" />-->
+        <link rel="stylesheet" type="text/css" href="/node_modules/angular2-toaster/toaster.css" />
+        <link rel="stylesheet" type="text/css" href="/node_modules/font-awesome/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="/css/site.css">
+    </environment>
+    <environment names="Production">
+        <link rel="stylesheet" href="/node_modules/angular2-busy/build/style/busy.css">
+        <link rel="stylesheet" href="/css/bootstrap.darkly.min.css" media="screen">
+        <!--<link rel="stylesheet" href="node_modules/ng2-toastr/bundles/ng2-toastr.min.css" />-->
+        <link rel="stylesheet" type="text/css" href="/node_modules/angular2-toaster/toaster.css" />
+        <link rel="stylesheet" type="text/css" href="/node_modules/font-awesome/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="/css/site.css">
+    </environment>
+    <!-- 1. Load libraries -->
+    <!-- Polyfill(s) for older browsers -->
+    <script src="/node_modules/core-js/client/shim.min.js"></script>
+    <script src="/node_modules/zone.js/dist/zone.min.js"></script>
+    <script src="/node_modules/reflect-metadata/Reflect.js"></script>
+    <script src="/node_modules/systemjs/dist/system.src.js"></script>
+    <!-- 2. Configure SystemJS -->
+    <script src="systemjs.config.js"></script>
+    <script>
+      //System.import('app').then(module => module.main({foo: 21, bar: 22})).catch(function(err){ console.error(err); });
+      //System.import('app').then(module => module.main(
+      System.import('app').then(function(module) {
+          module.main({
+              isAuthenticated: @this.ViewBag.Identity.IsAuthenticated,
+              name: '@this.ViewBag.Identity.Name',
+              isAdmin: @this.ViewBag.Identity.IsIMAdmin,
+              isUser: @this.ViewBag.Identity.IsIMUser,
+              userId: '@this.ViewBag.UserId'
+          });
+        }).catch(function(err){ console.error(err); });
+    </script>
+</head>
+<body>
+
+    <div class="container body-content applicationHost">
+        <intelligent-mission-app>
+            <nav class="navbar navbar-toggleable-md fixed-top navbar-inverse bg-primary">
+                <div class="container">
+                    <a class="navbar-brand" href="">Intelligent Mission</a>
+                </div>
+            </nav>
+            <h2>Loading Intelligent Mission...</h2>
+        </intelligent-mission-app>
+    </div>
+
+    <!--<div id="footer">
+        <div class="container">
+            <a class="btn btn-link" href="http://stevemichelotti.com/contact/" target="_blank">Contact Us</a>
+        </div>
+    </div>-->
+
+
+    </body>
+</html>

@@ -1,0 +1,12 @@
+<div class="modal-header">
+    <h4 class="modal-title">{{properties.title}}</h4>
+</div>
+
+<div class="modal-body">
+    {{properties.message}}
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="activeModal.close()">{{properties.buttons[0]}}</button>
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss('Cancelled')">{{properties.buttons[1]}}</button>
+</div>

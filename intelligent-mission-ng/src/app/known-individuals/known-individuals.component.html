@@ -1,0 +1,193 @@
+<div>
+    <toaster-container [toasterconfig]="toasterConfig"></toaster-container>
+    <div [ngBusy]="busy"></div>
+    <!--<h2>Known Individuals</h2>-->
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+
+                <div class="card">
+                    <h3 class="card-header">Known Individuals - Groups</h3>
+
+                    <div class="card-block">
+
+                        <form action="" class="form-inline">
+                            <button type="button" class="btn btn-primary mb-2 mr-sm-2 mb-sm-0" (click)="addGroup()">Add Group</button>
+
+                            <label class="mr-sm-2" for="exampleSelect1">Groups:</label>
+                            <select [(ngModel)]="selectedGroupId" name="personGroups" class="form-control mb-2 mr-sm-2 mb-sm-0" (change)="onGroupsChange()">
+                                <option value="">(Select)</option>
+                                <option *ngFor="let group of personGroups" [value]="group.personGroupId">{{group.name}}</option>
+                            </select>
+
+                            <button type="button" class="btn btn-danger mb-2 mr-sm-2 mb-sm-0" *ngIf="selectedGroupId" (click)="deletePersonGroup()">Delete Group</button>
+                            <button type="button" class="btn btn-success mb-2 mr-sm-2 mb-sm-0" *ngIf="selectedGroupId" (click)="trainPersonGroup()">Train Model</button>
+                            <button type="button" class="btn btn-info" *ngIf="selectedGroupId" (click)="getGroupTrainingStatus()">Check Training Status</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <!--<hr>-->
+
+
+
+
+        <div class="row">
+            <div class="col">
+                <!-- Container for People section -->
+
+                <div class="card" *ngIf="selectedGroupId">
+
+                    <h3 class="card-header">Individuals</h3>
+                    <div class="card-block">
+
+
+                        <!-- First column for left-hand section for Person section -->
+                        <div class="row">
+                            <div class="col-2" *ngIf="selectedGroupId">
+
+                                <div class="row">
+                                    <button class="btn btn-primary mb-sm-2" (click)="addPerson()">Add Person</button>
+                                </div>
+                                <div class="row">
+                                    <div class="list-group">
+
+                                        <a *ngFor="let person of personList" class="list-group-item list-group-item-action clickable" (click)="personClick(person)"
+                                            [ngClass]="{'active': selectedPerson && (selectedPerson.id === person.id), 'list-group-item-action': !selectedPerson || (selectedPerson.id !== person.id)}">
+                                    {{person.firstName}} {{person.lastName}}
+                                </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main column (right-side) for Person section -->
+                            <div class="col" *ngIf="selectedPerson">
+
+                                <div class="card">
+                                    <h4 class="card-header">Identified: {{selectedPerson.firstName}} {{selectedPerson.lastName}}</h4>
+                                    <div class="card-block">
+                                        <button class="btn btn-info mb-2 mr-sm-2 mb-sm-0" (click)="editPerson()">Edit Person Metadata</button>
+                                        <button class="btn btn-danger" (click)="deletePerson()">Delete Person</button>
+                                        <hr/>
+                                    </div>
+
+
+
+                                    <div class="card-block">
+                                        <h4 class="card-title">Face Identification</h4>                                        
+                                        <form *ngIf="identityInfo.isAdmin">
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">Add New Face</label>
+                                                <div class="col-sm-8">
+                                                    <input type="file" #fileInput class="form-control btn btn-primary" (change)="fileChange($event)" placeholder="Upload file"
+                                                        accept=".png,.jpg,.jpeg,.gif" />
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="card-block">
+
+                                        <div class="row">
+                                            <!-- image grid -->
+                                            <div class="col-md-3" *ngFor="let img of personFaces">
+                                                <div class="card">
+                                                    <div class="card-block card-block-img-container">
+                                                        <span class="img-container"><img class="img-person-face img-thumnail" [src]="img.userData" height="140" width="140" /></span>
+                                                    </div>
+                                                    <div class="card-block">
+                                                        <button type="button" class="btn btn-danger btn-sm" (click)="deleteFace(img)">Delete Face</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                    </div>
+
+                                    <div class="card-block">
+                                        <h4 class="card-title">Voice Identification</h4>
+                                        <form>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">Add Voice Audio</label>
+                                                <div class="col-sm-8">
+                                                    <button class="btn btn-primary" (click)="uploadAudioEnrollment()">Add/Change Audio Enrollment</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="card-block">
+                                        <h5 class="card-title">Preview audio:</h5>
+                                        <div class="card-text">
+                                            <audio controls="controls" [src]="selectedPerson.audioEnrollmentBlobUri"></audio>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+
+                                <!--<hr/>-->
+
+
+
+                                <!--<div class="row">
+                                    <button class="btn btn-info mb-2 mr-sm-2 mb-sm-0" (click)="editPerson()">Edit Person Metadata</button>
+                                    <button class="btn btn-danger" (click)="deletePerson()">Delete Person</button>
+
+                                </div>
+                                <div class="row person-row">
+                                    <h4>Identified: {{selectedPerson.firstName}} {{selectedPerson.lastName}}</h4>
+                                </div>
+
+                                <div class="row person-row">
+                                    <form>
+                                        <div class="form-group row">
+                                            <label class="col-sm-4 col-form-label">Add New Face</label>
+                                            <div class="col-sm-8">
+                                                <input type="file" #fileInput class="form-control btn btn-primary" (change)="fileChange($event)" placeholder="Upload file"
+                                                    accept=".png,.jpg,.jpeg,.gif" />
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="row">
+                                    -- image grid --
+                                    <div class="col-md-3" *ngFor="let img of personFaces">
+                                        <div class="card">
+                                            <div class="card-block card-block-img-container">
+                                                <span class="img-container">
+                                                    <img class="img-person-face img-thumnail" [src]="img.userData" height="140" width="140" />
+                                                </span>
+                                            </div>
+                                            <div class="card-block">
+                                                <button type="button" class="btn btn-danger btn-sm" (click)="deleteFace(img)">Delete Face</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>-->
+
+                            </div>
+
+                        </div>
+                        <!--row-->
+                    </div>
+                    <!--card-block-->
+
+                </div>
+                <!--card-->
+
+
+
+            </div>
+            <!--col-->
+        </div>
+        <!--row-->
+
+    </div>
+    <!--container-->
+</div>

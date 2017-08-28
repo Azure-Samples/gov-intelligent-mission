@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Sign Out";
+}
+<h2>You are not a valid user of the Intelligent Mission app.</h2>
+<p>
+    Contact <a href="mailto:steve.michelotti@microsoft.com">Steve Michelotti</a> if you are an internal
+    Microsoft employee and believe you shoudl have access.
+</p>
+
+<form id="signoutForm" action="/account/signout" method="post"></form>
+
+<script>
+    (function () {
+        setTimeout(function () {
+            var form = document.getElementById('signoutForm');
+            form.submit();
+            //window.location = '/account/signout';
+        }, 5000);
+    })();
+</script>

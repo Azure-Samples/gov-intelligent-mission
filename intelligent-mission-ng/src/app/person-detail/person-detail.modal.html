@@ -1,0 +1,29 @@
+<div class="modal-header">
+    <h4 class="modal-title">Identified Individual: {{person.firstName}} {{person.lastName}}</h4>
+</div>
+<div class="modal-body">
+    <div [ngBusy]="busy"></div>
+    <p>Last Known Location: {{person.location}}</p>
+    <p>{{person.bio}}</p>
+
+    <h4>Voice Sample</h4>
+    <audio controls="controls" [src]="person.audioEnrollmentBlobUri"></audio>
+
+    <h4>Images on record</h4>
+
+    <div class="row">
+        <!-- image grid -->
+        <div class="col-md-3" *ngFor="let img of faces">
+            <div class="card">
+                <div class="card-block card-block-img-container">
+                    <span class="img-container"><img class="img-person-face img-thumnail" [src]="img.userData" height="140" width="140" /></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss('Cancelled')">Dismiss</button>
+</div>

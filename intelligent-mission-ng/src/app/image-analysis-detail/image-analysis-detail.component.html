@@ -1,0 +1,139 @@
+<div>
+    <!--<toaster-container [toasterconfig]="toasterConfig"></toaster-container>-->
+    <div [ngBusy]="busy"></div>
+
+    <div class="container">
+        <div *ngIf="selectedImage" class="card">
+            <h3 class="card-header">Image Analysis</h3>
+            <div class="card-block">
+                <h4 class="card-title">{{selectedImage.name}} - {{selectedImage.description}}</h4>
+            </div>
+            <div class="card-block">
+                <button class="btn btn-primary mr-sm-2" (click)="analyzeFaces()">Face Analysis</button>
+                <button class="btn btn-primary mr-sm-2" (click)="analyzeObjects()">Object Analysis</button>
+                <button class="btn btn-info mr-sm-2" (click)="viewResults(content)" ngbTooltip="View Raw Face Results">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+                <button class="btn btn-info mr-sm-2" (click)="viewResults(contentObjects)" ngbTooltip="View Raw Object Results">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+            </div>
+            <div class="card-block" *ngIf="detectedObjects">
+                <h5>Description</h5>
+                <p class="text-warning" *ngFor="let desc of detectedObjects.visionResults.description.captions">
+                    {{desc.text}} <span class="text-small">({{formatPct(desc.confidence)}})</span>
+                </p>
+
+                <h5>Tags</h5>
+                <div class="row">
+                    <div class="col-md-3" *ngFor="let tag of detectedObjects.visionResults.tags">
+                        {{tag.name}} <span class="text-small">({{formatPct(tag.confidence)}})</span>
+                    </div>
+                </div>
+
+                <h5 class="mt-sm-2">Colors</h5>
+                <div class="row">
+                    <div class="col-md-3">
+                        Dominant background color: <span class="image-color-box" [ngStyle]="{'background': detectedObjects.visionResults.color.dominantColorBackground}"></span>
+                    </div>
+                    <div class="col-md-3">
+                        Dominant foreground color: <span class="image-color-box" [ngStyle]="{'background': detectedObjects.visionResults.color.dominantColorForeground}"></span>
+                    </div>
+                    <div class="col-md-3">
+                        Dominant colors:
+                        <span class="image-color-box" *ngFor="let c of detectedObjects.visionResults.color.dominantColors" [ngStyle]="{'background': c}"></span>
+                    </div>
+                    <div class="col-md-3">
+                        Accent color: <span class="image-color-box" [ngStyle]="{'background': '#' + detectedObjects.visionResults.color.accentColor}"></span>
+                    </div>
+                </div>
+
+                <div *ngIf="detectedObjects.ocrResults.regions.length">
+                    <h5 class="mt-sm-2">OCR</h5>
+                    <div class="row" *ngFor="let line of detectedObjects.ocrResults.regions[0].lines">
+                        <div class="col">
+                            <span *ngFor="let word of line.words">
+                                    {{word.text}} <span class="text-muted">({{word.boundingBox}})</span>                            &nbsp;
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr/>
+            </div>
+            <div class="card-block" *ngIf="selectedFace">
+                <h5>General:</h5>
+                <div class="row">
+                    <div class="col-2">
+                        Gender: {{selectedFace.face.faceAttributes.gender}}
+                    </div>
+                    <div class="col-2">
+                        Age: {{selectedFace.face.faceAttributes.age}}
+                    </div>
+                    <div class="col-2">
+                        Glasses: {{selectedFace.face.faceAttributes.glasses}}
+                    </div>
+                    <div class="col-2">
+                        Smile: {{selectedFace.face.faceAttributes.smile}}
+                    </div>
+                </div>
+                <hr/>
+
+                <h5>Emotions:</h5>
+                <div class="row">
+                    <div class="col-2">Anger: {{selectedFace.face.faceAttributes.emotion.anger}}</div>
+                    <div class="col-2">Contempt: {{selectedFace.face.faceAttributes.emotion.contempt}}</div>
+                    <div class="col-2">Disgust: {{selectedFace.face.faceAttributes.emotion.disgust}}</div>
+                    <div class="col-2">Fear: {{selectedFace.face.faceAttributes.emotion.fear}}</div>
+                    <div class="col-2">Happiness: {{selectedFace.face.faceAttributes.emotion.happiness}}</div>
+                    <div class="col-2">Neutral: {{selectedFace.face.faceAttributes.emotion.neutral}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-2">Sadness: {{selectedFace.face.faceAttributes.emotion.sadness}}</div>
+                    <div class="col-2">Surprise: {{selectedFace.face.faceAttributes.emotion.surprise}}</div>
+                </div>
+                <hr/>
+
+                <h5>Facial Hair:</h5>
+                <div class="row">
+                    <div class="col-2">Beard: {{selectedFace.face.faceAttributes.facialHair.beard}}</div>
+                    <div class="col-2">Moustache: {{selectedFace.face.faceAttributes.facialHair.moustache}}</div>
+                    <div class="col-2">Side burns: {{selectedFace.face.faceAttributes.facialHair.sideburns}}</div>
+                </div>
+                <hr *ngIf="selectedFace.identifiedPerson" />
+                <h4 class="text-success" *ngIf="selectedFace.identifiedPerson">Subject Identified!</h4>
+                <div class="row" *ngIf="selectedFace.identifiedPerson">
+                    <div class="col-2">Name: {{selectedFace.identifiedPerson.person.firstName}} {{selectedFace.identifiedPerson.person.lastName}}</div>
+                    <div class="col-2">Confidence: {{selectedFace.identifiedPerson.confidence}}</div>
+                    <div class="col-2"><button class="btn btn-info" (click)="viewDetail()">View Detail</button></div>
+                </div>
+            </div>
+
+
+            <div class="card-block">
+                <div class="mainImageContainer">
+                    <img #mainImg class="card-img main-img" [src]="selectedImage.blobUri" (load)="imageLoaded($event)" />
+
+                    <div [ngClass]="{'face-box-green': item.identifiedPerson, 'face-box-red': !item.identifiedPerson}" *ngFor="let item of detectedFaces"
+                        (click)="faceClicked(item)" [style.top.px]="item.face.faceRectangle.top * multiplier" [style.left.px]="item.face.faceRectangle.left * multiplier"
+                        [style.height.px]="item.face.faceRectangle.height * multiplier" [style.width.px]="item.face.faceRectangle.width * multiplier"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #content let-c="close" let-d="dismiss">
+        <div class="modal-header">Raw Text Analysis Results</div>
+        <div class="modal-body">
+            <pre>{{detectedFaces | json}}</pre>
+        </div>
+    </ng-template>
+
+    <ng-template #contentObjects let-c="close" let-d="dismiss">
+        <div class="modal-header">Raw Text Analysis Results</div>
+        <div class="modal-body">
+            <pre>{{detectedObjects | json}}</pre>
+        </div>
+    </ng-template>
+
+</div>

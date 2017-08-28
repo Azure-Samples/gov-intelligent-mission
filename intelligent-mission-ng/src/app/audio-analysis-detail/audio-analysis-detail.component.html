@@ -1,0 +1,65 @@
+<div>
+    <toaster-container [toasterconfig]="toasterConfig"></toaster-container>
+    <div [ngBusy]="busy"></div>
+
+    <div class="container">
+        <div class="card">
+            <h3 class="card-header">Analyze Audio</h3>
+
+            <div class="card-block">
+                <h5 class="card-title">Name:</h5>
+                <div class="card-text">
+                    {{selectedAudio.name}}
+                </div>
+            </div>
+
+            <div class="card-block">
+                <h5 class="card-title">Description:</h5>
+                <div class="card-text">
+                    {{selectedAudio.description}}
+                </div>
+            </div>
+
+            <div class="card-block">
+                <h5 class="card-title">Preview audio:</h5>
+                <div class="card-text">
+                    <audio controls="controls" [src]="selectedAudio.blobUri"></audio>
+                </div>
+            </div>
+
+            <div class="card-block">
+                <button class="btn btn-primary mr-sm-2" (click)="analyzeAudio()">Analyze</button>
+            </div>
+
+            <div class="card-block" *ngIf="analysisResult.status">
+                <h5 class="card-title">Speaker Recognition Results:</h5>
+                <div class="card-text" *ngIf="identifiedSpeaker">
+                    <span class="badge badge-success">Speaker Identified!</span>
+                    <h4 class="text-success">Subject Identified!</h4>
+                    <div class="row">
+                        <div class="col-2">Name: {{identifiedSpeaker.firstName}} {{identifiedSpeaker.lastName}}</div>
+                        <div class="col-2">Confidence: {{analysisResult.processingResult.confidence}}</div>
+                        <div class="col-2">
+                            <button class="btn btn-info" (click)="viewDetail()">View Subject Detail</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-text" *ngIf="!speakerIdentified">
+                    <span class="badge badge-success">Speaker Not Identified</span>
+                </div>
+                <button class="btn btn-info mr-sm-2" (click)="viewResults(content)" ngbTooltip="View Raw Results">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <ng-template #content let-c="close" let-d="dismiss">
+        <div class="modal-header">Raw Recognition Results</div>
+        <div class="modal-body">
+            <pre>{{analysisResult | json}}</pre>
+        </div>
+    </ng-template>
+
+</div>

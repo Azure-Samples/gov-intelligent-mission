@@ -1,0 +1,14 @@
+<div class="modal-header">
+    <h4 class="modal-title">Add New Group</h4>
+</div>
+<div class="modal-body">
+    <div class="form-group">
+        <label>Group Name:</label>
+        <input type="text" class="form-control" name="groupName" [(ngModel)]="editableItem.name" />
+        <!--[(ngModel)]="editableItem.distance" />-->
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="save()">Add</button>
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss('Cancelled')">Cancel</button>
+</div>

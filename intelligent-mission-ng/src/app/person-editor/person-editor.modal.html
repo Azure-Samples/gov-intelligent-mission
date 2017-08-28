@@ -1,0 +1,25 @@
+<div class="modal-header">
+    <h4 class="modal-title">{{action}} Person</h4>
+</div>
+<div class="modal-body">
+    <div class="form-group">
+        <label>First Name:</label>
+        <input type="text" class="form-control" name="groupName" [(ngModel)]="editableItem.firstName" />
+    </div>
+    <div class="form-group">
+        <label>Last Name:</label>
+        <input type="text" class="form-control" name="groupName" [(ngModel)]="editableItem.lastName" />
+    </div>
+    <div class="form-group">
+        <label>Last Known Location:</label>
+        <input type="text" class="form-control" name="groupName" [(ngModel)]="editableItem.location" />
+    </div>
+    <div class="form-group">
+        <label>BIO:</label>
+        <textarea rows="4" class="form-control" name="groupName" [(ngModel)]="editableItem.bio"></textarea>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="save()">{{action}}</button>
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss('Cancelled')">Cancel</button>
+</div>

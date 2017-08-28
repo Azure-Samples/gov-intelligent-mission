@@ -1,0 +1,37 @@
+<div>
+    <toaster-container [toasterconfig]="toasterConfig"></toaster-container>
+    <div [ngBusy]="busy"></div>
+
+    <div class="container">
+        <div class="card">
+            <h3 class="card-header">Image Analysis Library</h3>
+            <div class="card-block">
+                <button *ngIf="identityInfo.isAdmin" class="btn btn-primary mb-sm-2" (click)="addFile()">Add New Image File</button>
+
+                <table class="table table-striped table-hover">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let file of files">
+                            <td>{{file.name}}</td>
+                            <td>{{file.description}}</td>
+                            <td>
+                                <a class="btn btn-primary mr-sm-2" [routerLink]="['/image-analysis', file.id]">Select</a>
+                                <button *ngIf="identityInfo.isAdmin" class="btn btn-danger" (click)="deleteImage(file.id)">
+                                    <i class="fa fa-trash-o"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+</div>

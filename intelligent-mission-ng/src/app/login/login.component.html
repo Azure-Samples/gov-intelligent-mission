@@ -1,0 +1,12 @@
+<form class="form-inline navbar-nav nav float-xs-right" *ngIf="this.identityInfo.isAuthenticated" action="/account/signout"
+    method="post" id="logoutForm" #logoutForm>
+
+    <div ngbDropdown class="d-inline-block nav-item">
+        <a class="nav-link" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
+            {{this.identityInfo.name}}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="dropdownBasic1">
+            <button type="submit" class="dropdown-item" (click)="logoutForm.submit()">Log off</button>
+        </div>
+    </div>
+</form>

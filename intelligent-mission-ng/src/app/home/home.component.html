@@ -1,0 +1,60 @@
+<div>
+  <div class="jumbotron">
+    <h1 class="display-3">Intelligent Mission</h1>
+    <hr class="my-4" />
+    <p>
+      Intelligent Mission for Azure Government using Cognitive Services
+    </p>
+  </div>
+
+  <div class="card-group">
+    <div class="card">
+      <div class="card-header">Known Individuals</div>
+      <div class="card-block">
+        <div class="card-text">
+          The Known Individuals enables us to keep a repository of known individuals, pulling from multiple sources. This includes
+          metadata, face samples, and audio samples on the individual.
+        </div>
+      </div>
+      <div class="card-footer"><a class="btn btn-primary" [routerLink]="['/individuals']">Known Individuals</a></div>
+    </div>
+    <div class="card">
+      <div class="card-header">Image Analysis</div>
+      <div class="card-block">
+        <div class="card-text">
+          Image Analysis enables processing images of unknown entities and objects. This include face detection/recognition, object
+          identification, and OCR.
+        </div>
+      </div>
+      <div class="card-footer"><a class="btn btn-success" [routerLink]="['/image-analysis']">Image Analysis</a></div>
+    </div>
+    <div class="card">
+      <div class="card-header">Audio Analysis</div>
+      <div class="card-block">
+        <div class="card-text">
+          Audio Analysis enables processing of unknown voices and excutes speaker recognition.
+        </div>
+      </div>
+      <div class="card-footer"><a class="btn btn-info" [routerLink]="['/audio-analysis']">Audio Analysis</a></div>
+    </div>
+    <div class="card">
+      <div class="card-header">Video Analysis</div>
+      <div class="card-block">
+        <div class="card-text">
+          Video Analysis enables processing of unknown video to detect faces and motion.
+        </div>
+      </div>
+      <div class="card-footer"><a class="btn btn-warning" [routerLink]="['/video-analysis']">Video Analysis</a></div>
+    </div>
+    <div class="card">
+      <div class="card-header">Text Analysis</div>
+      <div class="card-block">
+        <div class="card-text">
+          Text Analysis processes text for keyword extract, sentiment analysis, and real-time translation.
+        </div>
+      </div>
+      <div class="card-footer"><a class="btn btn-danger" [routerLink]="['/text-analysis']">Text Analysis</a></div>
+    </div>
+
+
+  </div>

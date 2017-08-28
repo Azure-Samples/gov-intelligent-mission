@@ -1,0 +1,36 @@
+<div>
+    <toaster-container [toasterconfig]="toasterConfig"></toaster-container>
+    <div [ngBusy]="busy"></div>
+
+    <div class="container">
+        <div *ngIf="selectedVideo" class="card">
+            <h3 class="card-header">Video Analysis</h3>
+            <div class="card-block">
+                <h4 class="card-title">{{selectedVideo.name}} - {{selectedVideo.description}}</h4>
+            </div>
+            <div class="card-block">
+                <button class="btn btn-primary mr-sm-2" (click)="analyzeVideo()">Video Analysis</button>
+                <button class="btn btn-primary mr-sm-2" (click)="checkForAnalysisResults()">Check for Previous Analysis</button>
+                <button class="btn btn-primary mr-sm-2" (click)="saveResults()" *ngIf="videoResults">Save Results</button>
+                <button class="btn btn-info mr-sm-2" (click)="viewResults(content)" ngbTooltip="View Raw Results">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+            </div>
+            <div class="card-block">
+
+                <video controls (click)="toggleVideo()" #videoPlayer class="main-video">
+                    <source src="{{selectedVideo.blobUri}}" type="video/mp4" /> Browser not supported
+                </video>
+
+            </div>
+        </div>
+    </div>
+
+
+    <ng-template #content let-c="close" let-d="dismiss">
+        <div class="modal-header">Raw Video Analysis Results</div>
+        <div class="modal-body">
+            <pre>{{videoResults | json}}</pre>
+        </div>
+    </ng-template>
+</div>

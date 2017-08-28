@@ -1,0 +1,21 @@
+<div class="modal-header">
+    <h4 class="modal-title">Add New File</h4>
+</div>
+<div class="modal-body">
+    <div class="form-group">
+        <label> Name:</label>
+        <input type="text" class="form-control" name="" [(ngModel)]="editableItem.name" />
+    </div>
+    <div class="form-group">
+        <label>Description:</label>
+        <input type="text" class="form-control" name="groupName" [(ngModel)]="editableItem.description" />
+    </div>
+    <div class="form-group">
+        <label>File:</label>
+        <input type="file" #fileInput class="form-control" (change)="fileChange($event)" placeholder="Upload file" [accept]="properties.acceptFileTypes"/>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="save()">Add</button>
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss('Cancelled')">Cancel</button>
+</div>

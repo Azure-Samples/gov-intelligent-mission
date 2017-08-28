@@ -1,0 +1,43 @@
+<nav class="navbar navbar-toggleable-md fixed-top navbar-inverse bg-primary">
+  <a class="navbar-brand" [routerLink]="['/']">Intelligent Mission</a>
+
+  <div class="collapse navbar-collapse xnavbar-nav xnav">
+
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-item nav-link" [routerLink]="['/']" [routerLinkActive]="['active']">
+                    <span class='fa fa-home'></span> Home
+                </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-item nav-link" [routerLink]="['/individuals']" [routerLinkActive]="['link-active']">
+                    <span class='fa fa-users'></span> Known Individuals
+                </a>
+      </li>
+      <li class="nav-item dropdown">
+        <div ngbDropdown class="d-inline-block">
+          <a class="nav-item nav-link" ngbDropdownToggle>
+                        <span class='fa fa-line-chart'></span> Analysis
+                    </a>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <a class="dropdown-item" [routerLink]="['/image-analysis']" [routerLinkActive]="['link-active']">
+                            <span class='fa fa-picture-o'></span> Image Analysis
+                        </a>
+            <a class="dropdown-item" [routerLink]="['/audio-analysis']" [routerLinkActive]="['link-active']">
+                            <span class='fa fa-volume-up'></span> Audio Analysis
+                        </a>
+            <a class="dropdown-item" [routerLink]="['/video-analysis']" [routerLinkActive]="['link-active']">
+                            <span class='fa fa-video-camera'></span> Video Analysis
+                        </a>
+            <a class="dropdown-item" [routerLink]="['/text-analysis']" [routerLinkActive]="['link-active']">
+                            <span class='fa fa-file-text-o'></span> Text Analysis
+                        </a>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <login></login>
+
+  </div>
+</nav>
