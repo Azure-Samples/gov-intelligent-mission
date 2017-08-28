@@ -1,6 +1,6 @@
 ---
 services: government
-platforms: c#
+platforms: dotnet
 author: smichelotti
 ---
 
