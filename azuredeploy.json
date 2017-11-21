@@ -1,0 +1,127 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "baseName": {
+        "type": "string",
+        "defaultValue": "intel"
+    },
+    "webSkuName": {
+        "type": "string",
+        "allowedValues": [
+            "F1", "D1", "B1", "B2", "B3"
+        ],
+        "defaultValue": "F1"
+    },
+    "cogsSku": {
+        "type": "string",
+        "allowedValues": [
+            "F0", "P0", "P1", "P2", "S0", "S1", "S2", "S3", "S4", "S5", "S6"
+        ],
+        "defaultValue": "F0"
+    }
+  },
+  "variables": {
+    "storageAccountName": "[concat(parameters('baseName'), 'store')]",
+    "docDbName": "[concat(parameters('baseName'), 'docdb')]",
+    "cogsFaceName": "[concat(parameters('baseName'), '-face')]",
+    "cogsCvName": "[concat(parameters('baseName'), '-cv')]",
+    "cogsTranslateName": "[concat(parameters('baseName'), '-translate')]",
+    "webSiteName": "[concat(parameters('baseName'), '-web')]",
+    "webPlanName": "[concat(parameters('baseName'), '-webplan')]"
+  },
+  "resources": [
+    {
+      "name": "[variables('storageAccountName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2016-01-01",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "Storage",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "properties": {}
+    },
+    {
+        "apiVersion": "2015-04-08",
+        "kind": "GlobalDocumentDB",
+        "type": "Microsoft.DocumentDb/databaseAccounts",
+        "name": "[variables('docDbName')]",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "databaseAccountOfferType": "Standard",
+            "locations": [
+                {
+                    "id": "[variables('docDbName')]",
+                    "failoverPriority": 0,
+                    "locationName": "[resourceGroup().location]"
+                }
+            ]
+        },
+        "tags": {}
+    },
+    {
+        "apiVersion": "2016-02-01-preview",
+        "name": "[variables('cogsFaceName')]",
+        "location": "[resourceGroup().location]",
+        "type": "Microsoft.CognitiveServices/accounts",
+        "kind": "Face",
+        "sku": {
+            "name": "[parameters('cogsSku')]"
+        },
+        "properties": {}
+    },
+    {
+        "apiVersion": "2016-02-01-preview",
+        "name": "[variables('cogsCvName')]",
+        "location": "[resourceGroup().location]",
+        "type": "Microsoft.CognitiveServices/accounts",
+        "kind": "ComputerVision",
+        "sku": {
+            "name": "[parameters('cogsSku')]"
+        },
+        "properties": {}
+    },
+    {
+        "apiVersion": "2016-02-01-preview",
+        "name": "[variables('cogsTranslateName')]",
+        "location": "[resourceGroup().location]",
+        "type": "Microsoft.CognitiveServices/accounts",
+        "kind": "TextTranslation",
+        "sku": {
+            "name": "[parameters('cogsSku')]"
+        },
+        "properties": {}
+    },
+    {
+        "apiVersion": "2016-03-01",
+        "name": "[variables('webSiteName')]",
+        "type": "Microsoft.Web/sites",
+        "properties": {
+            "name": "[variables('webSiteName')]",
+            "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('webPlanName'))]"
+        },
+        "location": "[resourceGroup().location]",
+        "tags": {},
+        "dependsOn": [
+            "[concat('Microsoft.Web/serverfarms/', variables('webPlanName'))]"
+        ]
+    },
+    {
+        "apiVersion": "2016-09-01",
+        "name": "[variables('webPlanName')]",
+        "type": "Microsoft.Web/serverfarms",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "name": "[variables('webPlanName')]",
+            "numberOfWorkers": "1"
+        },
+        "sku": {
+            "Name": "[parameters('webSkuName')]"
+        }
+    }
+
+  ],
+  "outputs": {  }
+}
