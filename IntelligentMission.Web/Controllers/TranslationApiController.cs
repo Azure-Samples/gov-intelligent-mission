@@ -14,7 +14,6 @@ namespace IntelligentMission.Web.Controllers
         private ITranslationApiClient translationApi;
         private INewsProviderClient newsClient;
 
-
         public TranslationApiController(ITranslationApiClient translationApi, INewsProviderClient newsClient)
         {
             this.translationApi = translationApi;
