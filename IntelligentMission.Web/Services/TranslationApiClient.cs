@@ -1,6 +1,7 @@
 ﻿using IntelligentMission.Web.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,47 +32,47 @@ namespace IntelligentMission.Web.Services
 
         public async Task<string> GetTranslation(string language, string textToTranslate)
         {
-            var accessToken = this.cache.Get<string>(tokenKey);
-            if (accessToken == null)
-            {
-                await this.RefreshAccessToken();
-            }
-            accessToken = this.cache.Get<string>(tokenKey);
-
-            var response = await this.GetTranslation(language, textToTranslate, accessToken);
+            var response = await this.GetTranslation(language, textToTranslate, this.config.Keys.TextTranslationKey);
             if (!response.IsSuccessStatusCode)
             {
-                // Try just one more time. otherwise, something more significant is wrong.
-                await this.RefreshAccessToken();
-                accessToken = this.cache.Get<string>(tokenKey);
-                response = await this.GetTranslation(language, textToTranslate, accessToken);
+                // Try just one more time. otherwise, something more significant is wrong.   
                 
             }
             var result = await response.Content.ReadAsStringAsync();
-            var xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(result);
-            var value = xmlDoc["string"].InnerText;
-            return value;
-        }
+            var parse = JsonConvert.DeserializeObject<dynamic>(result);
+            string translatedtext = "";
+            StringBuilder builder = new StringBuilder();
 
-        private async Task<HttpResponseMessage> GetTranslation(string language, string textToTranslate, string accessToken)
-        {
-            using (var httpClient = new HttpClient())
+            foreach (dynamic trn in parse)
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                var response = await httpClient.GetAsync($"{this.config.CSEndpoints.TextTranslator}?to=en&text={textToTranslate}");
-                return response;
+                var translation = trn.translations;
+                foreach (dynamic i in translation)
+                {
+                    string parsetranslation = i.text;
+                    parsetranslation.Remove(0);
+                    parsetranslation.Remove(parsetranslation.Length - 1);
+                    translatedtext = parsetranslation;
+                }
             }
+            return translatedtext;
         }
 
-        private async Task RefreshAccessToken()
+        private async Task<HttpResponseMessage> GetTranslation(string language, string textToTranslate, string key)
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Add(Constants.OcpSubscriptionKey, this.config.Keys.TextTranslationKey);
-                var response = await httpClient.PostAsync(this.config.CSEndpoints.TokenApi, null);
-                var accessToken = await response.Content.ReadAsStringAsync();
-                this.cache.Set(tokenKey, accessToken);
+                using (var request = new HttpRequestMessage())
+                {
+                    System.Object[] body = new System.Object[] { new { Text = textToTranslate } };
+                    var requestBody = JsonConvert.SerializeObject(body);
+                    request.Method = HttpMethod.Post;
+                    request.RequestUri = new Uri($"{this.config.CSEndpoints.TextTranslator}&to={ language }");
+                    request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+                    request.Headers.Add("Ocp-Apim-Subscription-Key", key);
+
+                    var response = await httpClient.SendAsync(request);
+                    return response;
+                }
             }
         }
     }
