@@ -50,7 +50,7 @@ export function initApp(identityService: IdentityInfoService) {
     HttpModule,
     AppRoutingModule,
     NgbModule.forRoot(),
-    ToasterModule,
+    ToasterModule.forRoot(),
   ],
   providers: [
     MIApiService,

@@ -1,9 +1,11 @@
 ﻿using IntelligentMission.Web.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -29,49 +31,35 @@ namespace IntelligentMission.Web.Services
             this.config = config;
         }
 
+        //make  separate translation method for header
         public async Task<string> GetTranslation(string language, string textToTranslate)
         {
-            var accessToken = this.cache.Get<string>(tokenKey);
-            if (accessToken == null)
-            {
-                await this.RefreshAccessToken();
-            }
-            accessToken = this.cache.Get<string>(tokenKey);
-
-            var response = await this.GetTranslation(language, textToTranslate, accessToken);
-            if (!response.IsSuccessStatusCode)
-            {
-                // Try just one more time. otherwise, something more significant is wrong.
-                await this.RefreshAccessToken();
-                accessToken = this.cache.Get<string>(tokenKey);
-                response = await this.GetTranslation(language, textToTranslate, accessToken);
-                
-            }
+            var response = await this.GetTranslation(language, textToTranslate, this.config.Keys.TextTranslationKey);
             var result = await response.Content.ReadAsStringAsync();
-            var xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(result);
-            var value = xmlDoc["string"].InnerText;
-            return value;
+            var translationResult = JsonConvert.DeserializeObject<IEnumerable<dynamic>>(result);
+            dynamic translation = translationResult.First();
+            dynamic firstTranslation = (translation.translations as IEnumerable<dynamic>).First();
+            return firstTranslation.text;
         }
 
-        private async Task<HttpResponseMessage> GetTranslation(string language, string textToTranslate, string accessToken)
+        private async Task<HttpResponseMessage> GetTranslation(string language, string textToTranslate, string key)
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                var response = await httpClient.GetAsync($"{this.config.CSEndpoints.TextTranslator}?to=en&text={textToTranslate}");
-                return response;
-            }
-        }
+                using (var request = new HttpRequestMessage())
+                {
+                    var decodedString = WebUtility.HtmlDecode(textToTranslate);
 
-        private async Task RefreshAccessToken()
-        {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Add(Constants.OcpSubscriptionKey, this.config.Keys.TextTranslationKey);
-                var response = await httpClient.PostAsync(this.config.CSEndpoints.TokenApi, null);
-                var accessToken = await response.Content.ReadAsStringAsync();
-                this.cache.Set(tokenKey, accessToken);
+                    System.Object[] body = new System.Object[] { new { Text = decodedString } };
+                    var requestBody = JsonConvert.SerializeObject(body);
+                    request.Method = HttpMethod.Post;
+                    request.RequestUri = new Uri($"{this.config.CSEndpoints.TextTranslator}&to={ language }");
+                    request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+                    request.Headers.Add("Ocp-Apim-Subscription-Key", key);
+                    var response = await httpClient.SendAsync(request);
+                   
+                    return response;
+                }
             }
         }
     }
