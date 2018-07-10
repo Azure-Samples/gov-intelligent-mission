@@ -25,7 +25,6 @@ namespace IntelligentMission.Web.Controllers
         public async Task<IActionResult> GetTranslation(string id)
         {
             dynamic item = this.newsClient.GetNewsItem(id);
-            //var text = ((string)item.item.description).StripHtmlMarkup();
             var text = (string)item.item.description;
             var title = (string)item.item.title;
 

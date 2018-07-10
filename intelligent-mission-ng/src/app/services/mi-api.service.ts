@@ -7,8 +7,8 @@ import { FileUpload } from '../shared/shared';
 
 @Injectable()
 export class MIApiService {
-    private baseUrl = 'https://localhost:44396';
-    //add baseUrl in front of all of them
+    //private baseUrl = 'https://localhost:44396';
+    private baseUrl = '';
     constructor(private http: Http) {}
 
     createPerson(person) {

@@ -11,8 +11,8 @@ export class IdentityInfoService {
   constructor(private http:Http) { }
 
   public load() {
-    let url = 'https://localhost:44396/api/identity-info';
-    //let url = '/api/identity-info';
+   // let url = 'https://localhost:44396/api/identity-info';
+    let url = '/api/identity-info';
     return new Promise((resolve, reject) => {
       this.http.get(url)
         .map(res => res.json())

@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -30,31 +31,15 @@ namespace IntelligentMission.Web.Services
             this.config = config;
         }
 
+        //make  separate translation method for header
         public async Task<string> GetTranslation(string language, string textToTranslate)
         {
             var response = await this.GetTranslation(language, textToTranslate, this.config.Keys.TextTranslationKey);
-            if (!response.IsSuccessStatusCode)
-            {
-                // Try just one more time. otherwise, something more significant is wrong.   
-                
-            }
             var result = await response.Content.ReadAsStringAsync();
-            var parse = JsonConvert.DeserializeObject<dynamic>(result);
-            string translatedtext = "";
-            StringBuilder builder = new StringBuilder();
-
-            foreach (dynamic trn in parse)
-            {
-                var translation = trn.translations;
-                foreach (dynamic i in translation)
-                {
-                    string parsetranslation = i.text;
-                    parsetranslation.Remove(0);
-                    parsetranslation.Remove(parsetranslation.Length - 1);
-                    translatedtext = parsetranslation;
-                }
-            }
-            return translatedtext;
+            var translationResult = JsonConvert.DeserializeObject<IEnumerable<dynamic>>(result);
+            dynamic translation = translationResult.First();
+            dynamic firstTranslation = (translation.translations as IEnumerable<dynamic>).First();
+            return firstTranslation.text;
         }
 
         private async Task<HttpResponseMessage> GetTranslation(string language, string textToTranslate, string key)
@@ -63,14 +48,16 @@ namespace IntelligentMission.Web.Services
             {
                 using (var request = new HttpRequestMessage())
                 {
-                    System.Object[] body = new System.Object[] { new { Text = textToTranslate } };
+                    var decodedString = WebUtility.HtmlDecode(textToTranslate);
+
+                    System.Object[] body = new System.Object[] { new { Text = decodedString } };
                     var requestBody = JsonConvert.SerializeObject(body);
                     request.Method = HttpMethod.Post;
                     request.RequestUri = new Uri($"{this.config.CSEndpoints.TextTranslator}&to={ language }");
                     request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                     request.Headers.Add("Ocp-Apim-Subscription-Key", key);
-
                     var response = await httpClient.SendAsync(request);
+                   
                     return response;
                 }
             }
