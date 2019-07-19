@@ -1,9 +1,12 @@
 ---
 languages:
-- go
+- javascript
+- csharp
 page_type: sample
 products:
 - azure
+- azure-cognitive-services
+description: "The Intelligent Mission app is intended to demonstrate how organizations can use Cognitive Services in a Government-focused scenario."
 ---
 
 # Intelligent Mission
