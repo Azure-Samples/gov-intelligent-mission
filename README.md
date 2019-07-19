@@ -1,7 +1,9 @@
 ---
-services: government
-platforms: dotnet
-author: smichelotti
+languages:
+- go
+page_type: sample
+products:
+- azure
 ---
 
 # Intelligent Mission
