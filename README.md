@@ -41,7 +41,7 @@ The solution is divided into 2 major areas:
 * IntelligentMission.Web - This is an ASP.NET Core project that hosts the website, provides the Web API for the UI, and Authentications with Azure Active Directory.
 * intelligent-mission-mg - This is an Angular app (originally generated with the Angular CLI, so make sure you already have the Angular CLI installed).
 
-```
+```bash
 npm install -g @angular/cli
 ```
 
@@ -49,7 +49,7 @@ To build and run the solution locally:
 
 First, build the Angular project:
 
-```
+```bash
 cd intelligent-mission-ng
 npm install
 ng build --prod
@@ -79,7 +79,7 @@ Core [Secret Manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-
 If using Visual Studio, right-click on the web project and select "Manage User Secrets" - fill in secrets.json with the appropriate values
 from your provisioned resources in Azure:
 
-```
+```json
 {
   "Authentication:AzureAd:ClientId": "your-ad-app-registration-client-id",
   "Authentication:AzureAd:Domain": "your-ad-tenant-domain.onmicrosoft.com",
