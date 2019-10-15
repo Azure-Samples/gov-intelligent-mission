@@ -35,7 +35,7 @@ Other technologies include:
 * ASP.NET Core
 * Angular 4
 
-# Building and Running the Solution
+## Building and Running the Solution
 
 The solution is divided into 2 major areas:
 * IntelligentMission.Web - This is an ASP.NET Core project that hosts the website, provides the Web API for the UI, and Authentications with Azure Active Directory.
@@ -103,7 +103,7 @@ For simplicity, you can deploy to Azure by right-clicking Web project and select
 Before running in Azure, make sure your have created Environment Variables (via App Settings in your Azure Web App) that correspond to all the User Secrets values.
 
 
-# Contributing
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
