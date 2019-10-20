@@ -29,7 +29,7 @@
     "aspnet-prerendering": "^3.0.1",
     "core-js": "^2.4.1",
     "font-awesome": "^4.7.0",
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.13",
     "ng-select": "^1.0.0-rc.5",
     "ng2-select": "^2.0.0",
     "ngx-loading": "^1.0.14",
