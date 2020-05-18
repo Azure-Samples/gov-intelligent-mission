@@ -1,7 +1,7 @@
-﻿using IntelligentMission.Web.Models;
+﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using IntelligentMission.Web.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +12,12 @@ namespace IntelligentMission.Web.Services
 {
     public class StorageClient : IStorageClient
     {
-        private CloudBlobClient blobClient;
+        private BlobServiceClient blobServiceClient;
         private IMConfig config;
 
-        public StorageClient(CloudBlobClient blobClient, IMConfig config)
+        public StorageClient(BlobServiceClient blobServiceClient, IMConfig config)
         {
-            this.blobClient = blobClient;
+            this.blobServiceClient = blobServiceClient;
             this.config = config;
         }
 
@@ -36,48 +36,50 @@ namespace IntelligentMission.Web.Services
 
         private async Task<string> AddBlob(string containerName, string blobName, IFormFile blob)
         {
-            var container = blobClient.GetContainerReference(containerName);
+            var container = blobServiceClient.GetBlobContainerClient(containerName);
             await container.CreateIfNotExistsAsync();
-            await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+            await container.SetAccessPolicyAsync(PublicAccessType.Blob);
 
-            var blockBlob = container.GetBlockBlobReference(blobName);
-            blockBlob.Properties.ContentType = blob.ContentType;
+            var blockBlob = container.GetBlobClient(blobName);
+            BlobHttpHeaders blobHttpHeaders = new BlobHttpHeaders();
+            blobHttpHeaders.ContentType = blob.ContentType;
 
             using (var stream = blob.OpenReadStream())
             {
-                await blockBlob.UploadFromStreamAsync(stream);
+                await blockBlob.UploadAsync(stream, blobHttpHeaders);
             }
             return blockBlob.Uri.ToString();
         }
 
         public async Task<string> AddNewBlob(string personGroupId, string personId, IFormFile blob)
         {
-            var container = blobClient.GetContainerReference(Containers.PersonFaces);
+            var container = blobServiceClient.GetBlobContainerClient(Containers.PersonFaces);
             await container.CreateIfNotExistsAsync();
-            await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+            await container.SetAccessPolicyAsync(PublicAccessType.Blob);
 
             var blobName = GetBlobName(personGroupId, personId, $"{Guid.NewGuid()}-{blob.FileName.Replace(' ', '-')}");
-            var blockBlob = container.GetBlockBlobReference(blobName);
-            blockBlob.Properties.ContentType = blob.ContentType;
+            var blockBlob = container.GetBlobClient(blobName);
+            BlobHttpHeaders blobHttpHeaders = new BlobHttpHeaders();
+            blobHttpHeaders.ContentType = blob.ContentType;
 
             using (var stream = blob.OpenReadStream())
             {
-                await blockBlob.UploadFromStreamAsync(stream);
+                await blockBlob.UploadAsync(stream, blobHttpHeaders);
             }
             return blockBlob.Uri.ToString();
         }
 
-        public CloudBlockBlob GetCatalogFileBlobByUri(string blobUri) => GetBlobByUri(blobUri, Containers.CatalogFiles);
+        public BlobClient GetCatalogFileBlobByUri(string blobUri) => GetBlobByUri(blobUri, Containers.CatalogFiles);
 
 
-        public CloudBlockBlob GetAudioEnrollmentBlobByUri(string blobUri) => GetBlobByUri(blobUri, Containers.AudioEnrollments);
+        public BlobClient GetAudioEnrollmentBlobByUri(string blobUri) => GetBlobByUri(blobUri, Containers.AudioEnrollments);
 
 
-        private CloudBlockBlob GetBlobByUri(string blobUri, string containerName)
+        private BlobClient GetBlobByUri(string blobUri, string containerName)
         {
-            var container = blobClient.GetContainerReference(containerName);
+            var container = blobServiceClient.GetBlobContainerClient(containerName);
             var blobName = blobUri.Substring(blobUri.LastIndexOf("/") + 1);
-            var blob = container.GetBlockBlobReference(blobName);
+            var blob = container.GetBlobClient(blobName);
             return blob;
         }
 
@@ -93,21 +95,21 @@ namespace IntelligentMission.Web.Services
 
         private async Task DeleteBlob(string fullBlobUri, string containerName)
         {
-            var container = blobClient.GetContainerReference(containerName);
+            var container = blobServiceClient.GetBlobContainerClient(containerName);
             var blobName = ExtractBlobNameFromUri(fullBlobUri, containerName);
-            var blockBlob = container.GetBlockBlobReference(blobName);
+            var blockBlob = container.GetBlobClient(blobName);
             await blockBlob.DeleteAsync();
         }
 
         public async Task DeleteBlobs(string personGroupId, string personId)
         {
-            var container = blobClient.GetContainerReference(Containers.PersonFaces);
+            var container = blobServiceClient.GetBlobContainerClient(Containers.PersonFaces);
             var prefix = $"groups/{personGroupId}/persons/{personId}";
-            var blobs = container.ListBlobs(prefix: prefix, useFlatBlobListing: true);
+            var blobs = container.GetBlobs(prefix: prefix);
 
-            foreach (CloudBlockBlob blobItem in blobs)
+            foreach (var blobItem in blobs)
             {
-                var blob = container.GetBlockBlobReference(blobItem.Name);
+                var blob = container.GetBlobClient(blobItem.Name);
                 await blob.DeleteAsync();
             }
         }
