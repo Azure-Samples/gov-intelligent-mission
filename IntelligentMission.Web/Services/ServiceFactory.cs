@@ -1,9 +1,8 @@
-﻿using IntelligentMission.Web.Models;
+﻿using Azure.Storage;
+using Azure.Storage.Blobs;
+using IntelligentMission.Web.Models;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.ProjectOxford.Face;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,15 +20,11 @@ namespace IntelligentMission.Web.Services
             this.config = config;
         }
 
-        public CloudStorageAccount CreateCloudStorageAccount2() =>
-            new CloudStorageAccount(
-                new StorageCredentials(
-                    accountName: this.config.StorageConfig.AccountName,
-                    keyValue: this.config.StorageConfig.AccountKey),
-                endpointSuffix: this.config.StorageConfig.EndpointSuffix,
-                useHttps: true);
+        public BlobServiceClient CreateBlobServiceClient2() =>
+            new BlobServiceClient(new Uri(this.config.StorageConfig.EndpointSuffix),
+                new StorageSharedKeyCredential( this.config.StorageConfig.AccountName,this.config.StorageConfig.AccountKey));
 
-        public CloudBlobClient CreateCloudBlobClient() => this.CreateCloudStorageAccount2().CreateCloudBlobClient();
+        public BlobServiceClient CreateBlobServiceClient() => this.CreateBlobServiceClient2();
 
         //public FaceServiceClient CreateFaceServiceClient2() => new FaceServiceClient(this.config.Keys.FaceApiKey);
         public FaceServiceClient CreateFaceServiceClient2() => new FaceServiceClient(this.config.Keys.FaceApiKey, this.config.CSEndpoints.FaceApi);

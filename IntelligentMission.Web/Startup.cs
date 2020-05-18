@@ -13,11 +13,10 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
 using IntelligentMission.Web.Services;
 using IntelligentMission.Web.Models;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage;
 using Microsoft.ProjectOxford.Face;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.AspNetCore.Mvc;
+using Azure.Storage.Blobs;
 
 namespace IntelligentMission.Web
 {
@@ -76,8 +75,8 @@ namespace IntelligentMission.Web
             services.AddTransient<ImageAnalyzer>();
             services.AddTransient<PersonManager>();
             services.AddTransient<AudioManager>();
-            services.AddTransient<CloudStorageAccount>(p => p.GetService<ServiceFactory>().CreateCloudStorageAccount2());
-            services.AddTransient<CloudBlobClient>(p => p.GetService<ServiceFactory>().CreateCloudBlobClient());
+            services.AddTransient<BlobServiceClient>(p => p.GetService<ServiceFactory>().CreateBlobServiceClient2());
+            services.AddTransient<BlobServiceClient>(p => p.GetService<ServiceFactory>().CreateBlobServiceClient());
             services.AddTransient<FaceServiceClient>(p => p.GetService<ServiceFactory>().CreateFaceServiceClient2());
             services.AddTransient<DocumentClient>(p => p.GetService<ServiceFactory>().CreateDocumentClient2());
             

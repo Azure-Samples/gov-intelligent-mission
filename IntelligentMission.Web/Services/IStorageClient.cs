@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http;
-using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace IntelligentMission.Web.Services
 {
@@ -12,7 +12,7 @@ namespace IntelligentMission.Web.Services
         Task DeletePersonFaceBlob(string fullBlobUri);
         Task DeleteCatalogFileBlob(string fullBlobUri);
         Task DeleteBlobs(string personGroupId, string personId);
-        CloudBlockBlob GetCatalogFileBlobByUri(string blobUri);
-        CloudBlockBlob GetAudioEnrollmentBlobByUri(string blobUri);
+        BlobClient GetCatalogFileBlobByUri(string blobUri);
+        BlobClient GetAudioEnrollmentBlobByUri(string blobUri);
     }
 }

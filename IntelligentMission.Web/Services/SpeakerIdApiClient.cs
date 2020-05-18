@@ -1,5 +1,6 @@
-﻿using IntelligentMission.Web.Models;
-using Microsoft.WindowsAzure.Storage.Blob;
+﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using IntelligentMission.Web.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -16,9 +17,9 @@ namespace IntelligentMission.Web.Services
 {
     public interface ISpeakerIdApiClient
     {
-        Task<dynamic> Identify(CloudBlockBlob blob);
+        Task<dynamic> Identify(BlobClient blob);
         Task<string> CreateProfile();
-        Task<dynamic> CreateEnrollment(string identificationProfileId, CloudBlockBlob blob);
+        Task<dynamic> CreateEnrollment(string identificationProfileId, BlobClient blob);
 
     }
     public class SpeakerIdApiClient : ISpeakerIdApiClient
@@ -43,12 +44,13 @@ namespace IntelligentMission.Web.Services
             }
         }
 
-        public async Task<dynamic> CreateEnrollment(string identificationProfileId, CloudBlockBlob blob)
+        public async Task<dynamic> CreateEnrollment(string identificationProfileId, BlobClient blob)
         {
             using (var httpClient = CreateHttpClient())
             using (var stream = new MemoryStream())
             {
-                await blob.DownloadToStreamAsync(stream);
+                BlobDownloadInfo download = await blob.DownloadAsync();
+                await download.Content.CopyToAsync(stream);
                 stream.Position = 0;
 
 
@@ -66,13 +68,14 @@ namespace IntelligentMission.Web.Services
             }
         }
 
-        public async Task<dynamic> Identify(CloudBlockBlob blob)
+        public async Task<dynamic> Identify(BlobClient blob)
         {
             // NOTE: API can only support at most 10 speakerIdentificationProfileIds for one identification request so we need to page them
             var speakerIdentificationProfileIds = await this.GetValidIdentificationProfileIds();
             using (var stream = new MemoryStream())
             {
-                await blob.DownloadToStreamAsync(stream);
+                BlobDownloadInfo download = await blob.DownloadAsync();
+                await download.Content.CopyToAsync(stream);
                 var skipToken = 0;
                 const int pageSize = 10;
                 var idSegments = Enumerable.Empty<string>();
