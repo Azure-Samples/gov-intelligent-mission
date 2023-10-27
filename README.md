@@ -5,7 +5,7 @@ languages:
 page_type: sample
 products:
 - azure
-- azure-cognitive-services
+- ai-services
 description: "The Intelligent Mission app is intended to demonstrate how organizations can use Cognitive Services in a Government-focused scenario."
 ---
 
